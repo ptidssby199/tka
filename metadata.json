@@ -1,0 +1,6 @@
+{
+  "name": "TKA Pintar - Latihan Ujian Kurikulum Merdeka",
+  "description": "Aplikasi interaktif persiapan Tes Kemampuan Akademik (TKA) dan Ujian Sekolah jenjang SD, SMP, dan SMA/SMK berbasis Kurikulum Merdeka dengan sistem gamifikasi dan pemantauan progres belajar.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
