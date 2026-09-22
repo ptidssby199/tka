@@ -9,7 +9,8 @@ import {
   GraduationCap, 
   Sparkles,
   Github,
-  BookOpen
+  BookOpen,
+  Edit3
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -19,6 +20,7 @@ interface HeaderProps {
   onLevelChange: (level: EducationLevel) => void;
   onToggleSound: () => void;
   soundEnabled: boolean;
+  onOpenProfileModal: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -27,7 +29,8 @@ export const Header: React.FC<HeaderProps> = ({
   onTabChange,
   onLevelChange,
   onToggleSound,
-  soundEnabled
+  soundEnabled,
+  onOpenProfileModal
 }) => {
   const { level, progressPercent, nextLevelXp, prevLevelXp } = calculateLevel(profile.xp);
   const currentInLevelXp = Math.max(0, profile.xp - prevLevelXp);
@@ -122,6 +125,27 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* Student Name & Avatar Profile Button */}
+            <button
+              id="btn-edit-student-profile"
+              onClick={onOpenProfileModal}
+              className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 rounded-xl border border-slate-200 hover:border-blue-400 bg-slate-50 hover:bg-blue-50/50 transition-all text-left group"
+              title="Atur Nama & Profil Siswa"
+            >
+              <span className="text-xl sm:text-2xl leading-none">{profile.avatar || '👨‍🎓'}</span>
+              <div className="hidden sm:block">
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-bold text-slate-800 line-clamp-1 max-w-[110px]">
+                    {profile.name || 'Beri Nama'}
+                  </span>
+                  <Edit3 className="w-3 h-3 text-slate-400 group-hover:text-blue-600 transition-colors" />
+                </div>
+                <span className="text-[10px] text-blue-700 font-semibold block leading-tight">
+                  Lv.{level} {profile.rankTitle}
+                </span>
+              </div>
+            </button>
 
             {/* Sound Toggle */}
             <button

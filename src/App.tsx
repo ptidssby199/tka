@@ -22,6 +22,7 @@ import { DashboardView } from './components/DashboardView';
 import { GamificationView } from './components/GamificationView';
 import { GithubDeployGuide } from './components/GithubDeployGuide';
 import { QuizRunner } from './components/QuizRunner';
+import { StudentProfileModal } from './components/StudentProfileModal';
 import { Sparkles, Trophy, X } from 'lucide-react';
 
 export default function App() {
@@ -34,11 +35,22 @@ export default function App() {
   } | null>(null);
 
   const [newBadgeToast, setNewBadgeToast] = useState<{ name: string; icon: string } | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // Sync sound settings with audio manager
   useEffect(() => {
     soundFx.enabled = profile.soundEnabled;
   }, [profile.soundEnabled]);
+
+  // Prompt name modal on first visit if name is not set
+  useEffect(() => {
+    if (!profile.name || profile.name.trim() === '') {
+      const timer = setTimeout(() => {
+        setIsProfileModalOpen(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // Handle Jenjang Change (SD, SMP, SMA/SMK)
   const handleLevelChange = (lvl: EducationLevel) => {
@@ -128,9 +140,15 @@ export default function App() {
     }
   };
 
-  // Reset Data to Initial
+  // Save Student Profile
+  const handleSaveProfile = (updated: StudentProfile) => {
+    setProfile(updated);
+    saveProfile(updated);
+  };
+
+  // Reset Data to Initial Level 0
   const handleResetData = () => {
-    const def = getDefaultProfile(profile.selectedLevel);
+    const def = getDefaultProfile(profile.selectedLevel, profile.name);
     saveProfile(def);
     setProfile(def);
     soundFx.playClick();
@@ -177,6 +195,7 @@ export default function App() {
           onLevelChange={handleLevelChange}
           onToggleSound={handleToggleSound}
           soundEnabled={profile.soundEnabled}
+          onOpenProfileModal={() => setIsProfileModalOpen(true)}
         />
       )}
 
@@ -187,6 +206,8 @@ export default function App() {
             questions={activeQuiz.questions}
             mode={activeQuiz.mode}
             subjectName={activeQuiz.subjectName}
+            studentName={profile.name}
+            studentAvatar={profile.avatar}
             onFinish={handleQuizFinish}
             onExit={() => setActiveQuiz(null)}
             onRegenerateVariant={handleRegenerateVariant}
@@ -203,6 +224,7 @@ export default function App() {
                 }}
                 onResetCompletedQuestions={handleResetQuestionHistory}
                 onStartQuiz={handleStartQuiz}
+                onOpenProfileModal={() => setIsProfileModalOpen(true)}
               />
             )}
 
@@ -210,6 +232,7 @@ export default function App() {
               <DashboardView
                 profile={profile}
                 onStartQuizFromSubject={(subjId) => handleStartQuiz(subjId, 'practice')}
+                onOpenProfileModal={() => setIsProfileModalOpen(true)}
               />
             )}
 
@@ -230,6 +253,16 @@ export default function App() {
           </>
         )}
       </main>
+
+      {/* Student Profile & Local Device Storage Modal */}
+      <StudentProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        profile={profile}
+        onSaveProfile={handleSaveProfile}
+        onResetToZero={handleResetData}
+        isFirstTime={!profile.name || profile.name.trim() === ''}
+      />
 
       {/* Footer */}
       {!activeQuiz && (

@@ -15,17 +15,23 @@ import {
   Layers,
   BookOpen,
   Brain,
-  RotateCcw
+  RotateCcw,
+  User,
+  Edit3,
+  Smartphone,
+  Laptop
 } from 'lucide-react';
 
 interface DashboardViewProps {
   profile: StudentProfile;
   onStartQuizFromSubject: (subjectId: string) => void;
+  onOpenProfileModal?: () => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
   profile,
-  onStartQuizFromSubject
+  onStartQuizFromSubject,
+  onOpenProfileModal
 }) => {
   const [selectedHistoryItem, setSelectedHistoryItem] = useState<QuizResult | null>(null);
 
@@ -93,6 +99,60 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8" id="dashboard-siswa">
       
+      {/* Student Identity & Greeting Banner */}
+      <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 rounded-3xl p-6 sm:p-7 text-white shadow-lg relative overflow-hidden">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-4xl sm:text-5xl shadow-inner shrink-0">
+              {profile.avatar || '👨‍🎓'}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl sm:text-2xl font-black tracking-tight">
+                  {profile.name ? `Hai, ${profile.name}!` : 'Selamat Datang, Siswa Baru!'}
+                </h2>
+                {onOpenProfileModal && (
+                  <button
+                    onClick={onOpenProfileModal}
+                    className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/90 hover:text-white transition-colors"
+                    title="Ubah Nama & Profil"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              <p className="text-blue-100 text-xs sm:text-sm mt-0.5">
+                {profile.schoolName ? `${profile.schoolName} • ` : ''}Jenjang {profile.selectedLevel === 'SMA_SMK' ? 'SMA / SMK' : profile.selectedLevel} ({profile.grade || 'Fase Merdeka'})
+              </p>
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                <span className="px-2.5 py-0.5 bg-white/20 rounded-full text-xs font-bold text-white border border-white/20">
+                  Level {profile.level} • {profile.rankTitle}
+                </span>
+                <span className="text-xs text-blue-200">
+                  {profile.xp} Total XP
+                </span>
+                <span className="text-xs text-blue-200 flex items-center gap-1">
+                  <Smartphone className="w-3 h-3 inline" />
+                  Tersimpan di Perangkat Ini
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {onOpenProfileModal && (
+              <button
+                onClick={onOpenProfileModal}
+                className="px-4 py-2.5 bg-white text-blue-800 hover:bg-blue-50 font-bold rounded-xl text-xs sm:text-sm transition-all shadow-sm flex items-center gap-1.5"
+              >
+                <User className="w-4 h-4" />
+                {profile.name ? 'Ubah Profil Siswa' : 'Tambah Nama Siswa'}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Top Welcome & KPI Cards */}
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">

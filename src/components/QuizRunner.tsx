@@ -22,6 +22,8 @@ interface QuizRunnerProps {
   questions: Question[];
   mode: 'practice' | 'exam';
   subjectName: string;
+  studentName?: string;
+  studentAvatar?: string;
   onFinish: (result: QuizResult) => void;
   onExit: () => void;
   onRegenerateVariant?: (questionIndex: number) => void;
@@ -31,6 +33,8 @@ export const QuizRunner: React.FC<QuizRunnerProps> = ({
   questions,
   mode,
   subjectName,
+  studentName,
+  studentAvatar,
   onFinish,
   onExit,
   onRegenerateVariant
@@ -199,6 +203,13 @@ export const QuizRunner: React.FC<QuizRunnerProps> = ({
           <p className="text-slate-600 text-sm sm:text-base mt-1 max-w-md mx-auto">
             {mode === 'exam' ? 'Simulasi Ujian Sekolah TKA' : 'Latihan Mandiri Interaktif'} • {subjectName}
           </p>
+
+          {studentName && (
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-200 rounded-full text-blue-900 text-xs sm:text-sm font-bold mt-3">
+              <span>{studentAvatar || '👨‍🎓'}</span>
+              <span>Siswa: {studentName}</span>
+            </div>
+          )}
 
           {/* Big Score Card */}
           <div className="my-6 inline-block bg-slate-50 border border-slate-200 rounded-2xl px-8 py-5">

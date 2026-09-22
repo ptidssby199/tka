@@ -95,6 +95,7 @@ export interface DayActivity {
 export interface StudentProfile {
   name: string;
   avatar: string;
+  schoolName?: string;
   selectedLevel: EducationLevel;
   grade: string;
   xp: number;

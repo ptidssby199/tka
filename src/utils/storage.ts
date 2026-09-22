@@ -3,7 +3,8 @@ import { StudentProfile, QuizResult, EducationLevel, DayActivity } from '../type
 const STORAGE_KEY = 'tka_pintar_student_profile_v1';
 
 export function getRankTitle(level: number): string {
-  if (level <= 1) return 'Penjelajah Ilmu';
+  if (level <= 0) return 'Siswa Baru';
+  if (level === 1) return 'Penjelajah Ilmu';
   if (level === 2) return 'Pejuang Merdeka';
   if (level === 3) return 'Cendekiawan Muda';
   if (level === 4) return 'Master Asesmen';
@@ -12,9 +13,15 @@ export function getRankTitle(level: number): string {
 }
 
 export function calculateLevel(xp: number): { level: number; nextLevelXp: number; prevLevelXp: number; progressPercent: number } {
-  // Thresholds: Level 1: 0-200, Level 2: 200-500, Level 3: 500-1000, Level 4: 1000-2000, Level 5: 2000-3500...
-  const thresholds = [0, 200, 500, 1000, 2000, 3500, 5500, 8000];
-  let currentLevel = 1;
+  // Level 0: 0 - 100 XP (Siswa Baru)
+  // Level 1: 100 - 300 XP (Penjelajah Ilmu)
+  // Level 2: 300 - 650 XP (Pejuang Merdeka)
+  // Level 3: 650 - 1200 XP (Cendekiawan Muda)
+  // Level 4: 1200 - 2200 XP (Master Asesmen)
+  // Level 5: 2200 - 4000 XP (Begawan Prestasi)
+  // Level 6+: 4000+ XP
+  const thresholds = [100, 300, 650, 1200, 2200, 4000, 7000, 10000];
+  let currentLevel = 0;
   for (let i = 0; i < thresholds.length; i++) {
     if (xp >= thresholds[i]) {
       currentLevel = i + 1;
@@ -23,9 +30,9 @@ export function calculateLevel(xp: number): { level: number; nextLevelXp: number
     }
   }
 
-  const prevXp = thresholds[currentLevel - 1] || 0;
-  const nextXp = thresholds[currentLevel] || prevXp + 2000;
-  const diff = nextXp - prevXp;
+  const prevXp = currentLevel === 0 ? 0 : thresholds[currentLevel - 1];
+  const nextXp = thresholds[currentLevel] || prevXp + 2500;
+  const diff = Math.max(1, nextXp - prevXp);
   const inLevel = Math.max(0, xp - prevXp);
   const progressPercent = Math.min(100, Math.round((inLevel / diff) * 100));
 
@@ -66,66 +73,30 @@ export function getInitialDaysMap(): Record<string, DayActivity> {
   return days;
 }
 
-export function getDefaultProfile(level: EducationLevel = 'SMP'): StudentProfile {
+export function getDefaultProfile(level: EducationLevel = 'SMP', customName: string = ''): StudentProfile {
   const today = new Date().toISOString().split('T')[0];
   const days = getInitialDaysMap();
 
-  // Populate some gentle initial activity so dashboard looks alive and inspiring
-  const dates = Object.keys(days).sort();
-  if (dates.length >= 3) {
-    days[dates[0]] = { ...days[dates[0]], questionsCount: 5, durationMinutes: 12, xpEarned: 80 };
-    days[dates[1]] = { ...days[dates[1]], questionsCount: 8, durationMinutes: 18, xpEarned: 130 };
-    days[dates[2]] = { ...days[dates[2]], questionsCount: 6, durationMinutes: 15, xpEarned: 95 };
-  }
-
-  const initialHistory: QuizResult[] = [
-    {
-      id: 'demo-result-1',
-      timestamp: Date.now() - 86400000 * 2,
-      level,
-      subject: level === 'SD' ? 'sd-literasi' : level === 'SMP' ? 'smp-literasi' : 'sma-literasi-indonesia',
-      mode: 'practice',
-      totalQuestions: 5,
-      correctAnswers: 4,
-      score: 80,
-      durationSeconds: 240,
-      xpEarned: 120,
-      answers: []
-    },
-    {
-      id: 'demo-result-2',
-      timestamp: Date.now() - 86400000,
-      level,
-      subject: level === 'SD' ? 'sd-numerasi' : level === 'SMP' ? 'smp-numerasi' : 'sma-penalaran-matematika',
-      mode: 'exam',
-      totalQuestions: 5,
-      correctAnswers: 5,
-      score: 100,
-      durationSeconds: 310,
-      xpEarned: 170,
-      answers: []
-    }
-  ];
-
   return {
-    name: 'Siswa Merdeka',
+    name: customName,
     avatar: '👨‍🎓',
+    schoolName: '',
     selectedLevel: level,
     grade: level === 'SD' ? 'Kelas 6' : level === 'SMP' ? 'Kelas 9' : 'Kelas 12',
-    xp: 290,
-    level: 2,
-    rankTitle: 'Pejuang Merdeka',
-    streakDays: 3,
+    xp: 0,
+    level: 0,
+    rankTitle: 'Siswa Baru',
+    streakDays: 0,
     lastActiveDate: today,
-    totalQuizzesTaken: 2,
-    totalQuestionsAnswered: 10,
+    totalQuizzesTaken: 0,
+    totalQuestionsAnswered: 0,
     weeklyGoalMinutes: 90,
     soundEnabled: true,
-    unlockedBadgeIds: ['first_quiz', 'score_superior', 'score_perfect', 'streak_3'],
-    history: initialHistory,
+    unlockedBadgeIds: [],
+    history: [],
     dailyActivities: days,
-    completedQuestionIds: ['sd-lit-1', 'smp-lit-1'],
-    questionVariantIndices: { 'sd-lit-1': 1, 'smp-lit-1': 1 },
+    completedQuestionIds: [],
+    questionVariantIndices: {},
     hideCompletedQuestions: false,
     autoVaryCompletedQuestions: true
   };
@@ -158,6 +129,19 @@ export function loadProfile(): StudentProfile {
     if (parsed.autoVaryCompletedQuestions === undefined) {
       parsed.autoVaryCompletedQuestions = true;
     }
+    if (parsed.name === undefined) {
+      parsed.name = '';
+    }
+    if (parsed.avatar === undefined) {
+      parsed.avatar = '👨‍🎓';
+    }
+    if (parsed.schoolName === undefined) {
+      parsed.schoolName = '';
+    }
+    // Sync level and rank title dynamically with current XP
+    const lvlInfo = calculateLevel(parsed.xp || 0);
+    parsed.level = lvlInfo.level;
+    parsed.rankTitle = getRankTitle(lvlInfo.level);
     return parsed;
   } catch {
     return getDefaultProfile();

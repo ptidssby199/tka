@@ -61,11 +61,12 @@ export const GamificationView: React.FC<GamificationViewProps> = ({
   };
 
   const ranks = [
-    { level: 1, title: 'Penjelajah Ilmu', xpRange: '0 - 199 XP' },
-    { level: 2, title: 'Pejuang Merdeka', xpRange: '200 - 499 XP' },
-    { level: 3, title: 'Cendekiawan Muda', xpRange: '500 - 999 XP' },
-    { level: 4, title: 'Master Asesmen', xpRange: '1.000 - 1.999 XP' },
-    { level: 5, title: 'Begawan Prestasi', xpRange: '2.000+ XP' }
+    { level: 0, title: 'Siswa Baru', xpRange: '0 - 99 XP' },
+    { level: 1, title: 'Penjelajah Ilmu', xpRange: '100 - 299 XP' },
+    { level: 2, title: 'Pejuang Merdeka', xpRange: '300 - 649 XP' },
+    { level: 3, title: 'Cendekiawan Muda', xpRange: '650 - 1.199 XP' },
+    { level: 4, title: 'Master Asesmen', xpRange: '1.200 - 2.199 XP' },
+    { level: 5, title: 'Begawan Prestasi', xpRange: '2.200+ XP' }
   ];
 
   // Daily quests checklist based on actual profile state

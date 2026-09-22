@@ -23,6 +23,7 @@ interface PracticeViewProps {
   onUpdateProfile: (updated: StudentProfile) => void;
   onResetCompletedQuestions: () => void;
   onStartQuiz: (subjectId: string, mode: 'practice' | 'exam', difficulty: 'all' | QuestionDifficulty) => void;
+  onOpenProfileModal?: () => void;
 }
 
 export const PracticeView: React.FC<PracticeViewProps> = ({
@@ -30,7 +31,8 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   profile,
   onUpdateProfile,
   onResetCompletedQuestions,
-  onStartQuiz
+  onStartQuiz,
+  onOpenProfileModal
 }) => {
   const [selectedMode, setSelectedMode] = useState<'practice' | 'exam'>('practice');
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
@@ -94,9 +96,23 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
       {/* Hero / Intro Card */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-6 sm:p-10 text-white shadow-sm relative overflow-hidden">
         <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/15 backdrop-blur rounded-full text-xs font-semibold mb-4 border border-white/20">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            Asesmen Standar TKA • Kurikulum Merdeka
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/15 backdrop-blur rounded-full text-xs font-semibold border border-white/20">
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              Asesmen Standar TKA • Kurikulum Merdeka
+            </div>
+            {onOpenProfileModal && (
+              <button
+                type="button"
+                onClick={onOpenProfileModal}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 hover:bg-white/30 backdrop-blur rounded-full text-xs font-bold text-white border border-white/20 transition-all cursor-pointer"
+                title="Klik untuk ubah nama atau avatar siswa"
+              >
+                <span>{profile.avatar || '👨‍🎓'}</span>
+                <span>{profile.name || 'Tambah Nama Siswa'}</span>
+                <span className="text-amber-300 font-extrabold">• Lv.{profile.level}</span>
+              </button>
+            )}
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
             Latihan Soal Ujian Jenjang {levelLabel}
