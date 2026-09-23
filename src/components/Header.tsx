@@ -12,6 +12,7 @@ import {
   BookOpen,
   Edit3
 } from 'lucide-react';
+import { PWAInstallButton } from './PWAInstallPrompt';
 
 interface HeaderProps {
   profile: StudentProfile;
@@ -146,6 +147,9 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </div>
             </button>
+
+            {/* PWA Install Button */}
+            <PWAInstallButton />
 
             {/* Sound Toggle */}
             <button

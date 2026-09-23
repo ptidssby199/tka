@@ -23,6 +23,7 @@ import { GamificationView } from './components/GamificationView';
 import { GithubDeployGuide } from './components/GithubDeployGuide';
 import { QuizRunner } from './components/QuizRunner';
 import { StudentProfileModal } from './components/StudentProfileModal';
+import { OfflineIndicator } from './components/PWAInstallPrompt';
 import { Sparkles, Trophy, X } from 'lucide-react';
 
 export default function App() {
@@ -279,6 +280,8 @@ export default function App() {
           </div>
         </footer>
       )}
+      {/* Offline Connectivity Indicator */}
+      <OfflineIndicator />
     </div>
   );
 }
